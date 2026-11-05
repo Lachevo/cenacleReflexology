@@ -1,0 +1,256 @@
+/*
+ * Cenacle Reflexology – Custom Styling Plugin
+ *
+ * Service colour palette:
+ *   Foot Reflexology        → #4A90D9  (blue)
+ *   Full Body Massage       → #8B5CF6  (purple)
+ *   Back Massage            → #B07DB0  (mauve)
+ *   Head & Shoulder Massage → #5FAD8E  (sage green)
+ *   Hand Reflexology        → #E8865A  (warm coral)
+ */
+
+/* ─── Brand Variables ──────────────────────────────────────────────── */
+:root {
+  --cenacle-primary:       #2C6E6E;
+  --cenacle-primary-hover: #1f4f4f;
+  --cenacle-primary-light: #e8f4f4;
+  --cenacle-bg:            #f5f7f7;
+  --cenacle-text:          #1a2b2b;
+  --cenacle-border:        #c8d8d8;
+
+  /* Service colours */
+  --color-foot:        #4A90D9;
+  --color-foot-text:   #ffffff;
+  --color-fullbody:    #8B5CF6;
+  --color-fullbody-text: #ffffff;
+  --color-back:        #B07DB0;
+  --color-back-text:   #ffffff;
+  --color-headshoulder: #5FAD8E;
+  --color-headshoulder-text: #ffffff;
+  --color-hand:        #E8865A;
+  --color-hand-text:   #ffffff;
+}
+
+/* ─── Override Brand Colours ───────────────────────────────────────── */
+[data-bs-theme='default'] {
+  --primary:          var(--cenacle-primary) !important;
+  --primary-hover:    var(--cenacle-primary-hover) !important;
+  --primary-disabled: #7aadad !important;
+  --text-color-btn:   #ffffff !important;
+}
+
+/* ─── Typography & Body ────────────────────────────────────────────── */
+body {
+  font-family: 'Hind', 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--cenacle-bg);
+  color: var(--cenacle-text);
+}
+
+/* ─── Navbar ───────────────────────────────────────────────────────── */
+.navbar.bg-light {
+  background-color: #ffffff !important;
+  border-bottom: 2px solid var(--cenacle-primary);
+}
+
+/* ─── Logo / Brand area ────────────────────────────────────────────── */
+.navbar-brand-cenacle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.cenacle-brand-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--cenacle-primary);
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+}
+
+.cenacle-brand-subtitle {
+  font-size: 0.72rem;
+  color: #6b7c7c;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ─── Minimal card styling ─────────────────────────────────────────── */
+.card {
+  border: 1px solid var(--cenacle-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(44, 110, 110, 0.07);
+}
+
+.card-header {
+  background-color: var(--cenacle-primary-light);
+  border-bottom: 1px solid var(--cenacle-border);
+  font-weight: 600;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────── */
+.btn-primary {
+  --bs-btn-bg:            var(--cenacle-primary);
+  --bs-btn-border-color:  var(--cenacle-primary);
+  --bs-btn-hover-bg:      var(--cenacle-primary-hover);
+  --bs-btn-hover-border-color: var(--cenacle-primary-hover);
+  --bs-btn-active-bg:     var(--cenacle-primary-hover);
+  --bs-btn-active-border-color: var(--cenacle-primary-hover);
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.btn-outline-primary {
+  --bs-btn-border-color: var(--cenacle-primary);
+  --bs-btn-color:        var(--cenacle-primary);
+  --bs-btn-hover-bg:     var(--cenacle-primary);
+  --bs-btn-hover-color:  #ffffff;
+  border-radius: 6px;
+}
+
+/* ─── Schedule / Reservation Grid ─────────────────────────────────── */
+table.reservations td.resourcename {
+  background-color: #eaf2f2;
+  color: var(--cenacle-primary);
+  font-weight: 500;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+}
+
+table.reservations td.resdate {
+  background-color: color-mix(in srgb, var(--cenacle-primary) 70%, black);
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+/* ─── Service Colour Classes ───────────────────────────────────────── */
+
+/* Foot Reflexology – Blue */
+.reserved.cenacle-foot,
+.event.cenacle-foot {
+  background-color: var(--color-foot) !important;
+  color: var(--color-foot-text) !important;
+  border-color: color-mix(in srgb, var(--color-foot) 80%, black) !important;
+}
+.reserved.cenacle-foot.hilite,
+.event.cenacle-foot:hover {
+  background-color: color-mix(in srgb, var(--color-foot) 80%, black) !important;
+}
+
+/* Full Body Massage – Purple */
+.reserved.cenacle-fullbody,
+.event.cenacle-fullbody {
+  background-color: var(--color-fullbody) !important;
+  color: var(--color-fullbody-text) !important;
+  border-color: color-mix(in srgb, var(--color-fullbody) 80%, black) !important;
+}
+.reserved.cenacle-fullbody.hilite,
+.event.cenacle-fullbody:hover {
+  background-color: color-mix(in srgb, var(--color-fullbody) 80%, black) !important;
+}
+
+/* Back Massage – Mauve */
+.reserved.cenacle-back,
+.event.cenacle-back {
+  background-color: var(--color-back) !important;
+  color: var(--color-back-text) !important;
+  border-color: color-mix(in srgb, var(--color-back) 80%, black) !important;
+}
+.reserved.cenacle-back.hilite,
+.event.cenacle-back:hover {
+  background-color: color-mix(in srgb, var(--color-back) 80%, black) !important;
+}
+
+/* Head & Shoulder Massage – Sage Green */
+.reserved.cenacle-headshoulder,
+.event.cenacle-headshoulder {
+  background-color: var(--color-headshoulder) !important;
+  color: var(--color-headshoulder-text) !important;
+  border-color: color-mix(in srgb, var(--color-headshoulder) 80%, black) !important;
+}
+.reserved.cenacle-headshoulder.hilite,
+.event.cenacle-headshoulder:hover {
+  background-color: color-mix(in srgb, var(--color-headshoulder) 80%, black) !important;
+}
+
+/* Hand Reflexology – Warm Coral */
+.reserved.cenacle-hand,
+.event.cenacle-hand {
+  background-color: var(--color-hand) !important;
+  color: var(--color-hand-text) !important;
+  border-color: color-mix(in srgb, var(--color-hand) 80%, black) !important;
+}
+.reserved.cenacle-hand.hilite,
+.event.cenacle-hand:hover {
+  background-color: color-mix(in srgb, var(--color-hand) 80%, black) !important;
+}
+
+/* ─── Colour Legend (shown on schedule page) ───────────────────────── */
+.cenacle-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0 4px;
+  font-size: 0.78rem;
+}
+
+.cenacle-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cenacle-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ─── Reservation popup ────────────────────────────────────────────── */
+.res_popup_details {
+  min-width: 380px;
+  border-radius: 8px;
+}
+
+/* ─── Admin table tweaks ───────────────────────────────────────────── */
+.table > thead > tr > th {
+  background-color: var(--cenacle-primary-light);
+  color: var(--cenacle-primary);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* ─── Status badges ────────────────────────────────────────────────── */
+.cenacle-status-confirmed   { background-color: #d1fae5; color: #065f46; }
+.cenacle-status-completed   { background-color: #dbeafe; color: #1e40af; }
+.cenacle-status-cancelled   { background-color: #fee2e2; color: #991b1b; }
+.cenacle-status-noshow      { background-color: #fef3c7; color: #92400e; }
+
+/* ─── Pricing badge (shown in reservation details) ─────────────────── */
+.cenacle-price {
+  font-weight: 700;
+  color: var(--cenacle-primary);
+  font-size: 1.05em;
+}
+
+/* ─── Responsive tweaks ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .cenacle-legend {
+    flex-direction: column;
+  }
+  .cenacle-brand-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* ─── Footer ───────────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--cenacle-border);
+  background-color: #ffffff;
+  font-size: 0.78rem;
+  color: #6b7c7c;
+}
+
