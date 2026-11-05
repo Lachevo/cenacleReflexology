@@ -3,11 +3,18 @@
 		<i class="bi bi-chevron-double-up" aria-hidden="true"></i>
 	</div>
 	<footer class="bg-light border-top text-center py-1" role="contentinfo">
-		{if $CompanyName neq ''}
-			<div class="mb-2"><a class="link-primary" href="{$CompanyUrl}">{$CompanyName}</a></div>
-		{/if}
-		<div><a class="link-primary" href="https://github.com/LibreBooking/librebooking">LibreBooking - GPLv3 -
-				{$DisplayVersion}</a></div>
+		<div class="d-flex flex-wrap justify-content-center align-items-center gap-3 py-1" style="font-size:0.75rem;color:#6b7c7c;">
+			<span style="font-weight:600;color:var(--cenacle-primary,#2C6E6E);letter-spacing:0.05em;">CENACLE REFLEXOLOGY</span>
+			{* Colour legend row in footer for small screens *}
+			<span class="d-flex gap-2 align-items-center">
+				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#4A90D9;"></span> Foot Reflexology
+				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#8B5CF6;"></span> Full Body
+				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#B07DB0;"></span> Back Massage
+				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#5FAD8E;"></span> Head &amp; Shoulder
+				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#E8865A;"></span> Hand Reflexology
+			</span>
+			<a class="link-secondary" href="https://github.com/LibreBooking/librebooking" style="font-size:0.65rem;opacity:0.5;">Powered by LibreBooking</a>
+		</div>
 	</footer>
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">

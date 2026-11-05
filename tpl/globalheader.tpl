@@ -130,13 +130,27 @@
     {if !isset($HideNavBar) || $HideNavBar == false}
         <div class="d-flex align-items-center gap-2 m-2">
             <a class="navbar-brand" href="{$HomeUrl}">
-                <img src="{$Path}{$LogoUrl}?{$Version}" alt="{$Title}" class="logo">
-            </a>
-            <div class="border-start ps-2 d-flex flex-column">
-                {if $CompanyName neq ''}
-                    <h5 class="mb-0"><a class="link-primary" href="{$CompanyUrl}">{$CompanyName}</a></h5>
+                {* Cenacle branding: show logo if one is uploaded, otherwise show minimal text mark *}
+                {if $LogoUrl neq 'img/logo.png' && $LogoUrl neq ''}
+                    <img src="{$Path}{$LogoUrl}?{$Version}" alt="Cenacle Reflexology" class="logo" style="max-height:52px;">
+                {else}
+                    <div class="cenacle-text-logo d-flex flex-column" style="line-height:1.1;">
+                        <span style="font-size:1.3rem;font-weight:700;color:var(--cenacle-primary,#2C6E6E);letter-spacing:0.04em;">CENACLE</span>
+                        <span style="font-size:0.65rem;color:#6b7c7c;letter-spacing:0.14em;text-transform:uppercase;">REFLEXOLOGY</span>
+                    </div>
                 {/if}
-                <h5 class="mb-0"><a class="link-primary" href="{$HomeUrl}">{$AppTitle}</a></h5>
+            </a>
+            {* Cenacle service colour legend strip — compact, always visible in header *}
+            <div class="d-none d-md-flex ms-2 align-items-center gap-1" style="font-size:0.68rem;color:#555;">
+                <span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#4A90D9;"></span> Foot
+                &nbsp;
+                <span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#8B5CF6;"></span> Full Body
+                &nbsp;
+                <span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#B07DB0;"></span> Back
+                &nbsp;
+                <span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#5FAD8E;"></span> Head&amp;Shoulder
+                &nbsp;
+                <span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#E8865A;"></span> Hand
             </div>
         </div>
         <nav class="navbar navbar-expand-lg bg-light shadow-sm py-2 sticky-top">

@@ -278,6 +278,25 @@
                             class="legend restricted border border-dark-subtle rounded-2 d-flex align-items-center justify-content-center lh-sm py-1">
                             {translate key=Restricted}</div>
                     </div>
+                    {* Cenacle Service Colors Legend *}
+                    <div class="cenacle-schedule-legend d-flex justify-content-center flex-wrap gap-2 text-center mt-2 pb-2 border-bottom" style="font-size:0.75rem;">
+                        <span class="fw-semibold text-secondary me-1 align-self-center">Treatments:</span>
+                        <span class="badge border py-1 px-2 d-inline-flex align-items-center gap-1" style="background:#eef6fc;color:#1e40af;border-color:#b9d9fc !important;">
+                            <span style="width:10px;height:10px;border-radius:2px;background:#4A90D9;display:inline-block;"></span> Foot Reflexology (Chairs 1–6)
+                        </span>
+                        <span class="badge border py-1 px-2 d-inline-flex align-items-center gap-1" style="background:#faf5ff;color:#6b21a8;border-color:#e2d4fd !important;">
+                            <span style="width:10px;height:10px;border-radius:2px;background:#8B5CF6;display:inline-block;"></span> Full Body (Bed Only)
+                        </span>
+                        <span class="badge border py-1 px-2 d-inline-flex align-items-center gap-1" style="background:#fdf4ff;color:#86198f;border-color:#f5d0fe !important;">
+                            <span style="width:10px;height:10px;border-radius:2px;background:#B07DB0;display:inline-block;"></span> Back Massage (Bed Only)
+                        </span>
+                        <span class="badge border py-1 px-2 d-inline-flex align-items-center gap-1" style="background:#f0fdf4;color:#166534;border-color:#bbf7d0 !important;">
+                            <span style="width:10px;height:10px;border-radius:2px;background:#5FAD8E;display:inline-block;"></span> Head &amp; Shoulder (Chairs 1–6)
+                        </span>
+                        <span class="badge border py-1 px-2 d-inline-flex align-items-center gap-1" style="background:#fff7ed;color:#9a3412;border-color:#fed7aa !important;">
+                            <span style="width:10px;height:10px;border-radius:2px;background:#E8865A;display:inline-block;"></span> Hand Reflexology (Chairs 1–6)
+                        </span>
+                    </div>
                 </div>
             {/block}
 

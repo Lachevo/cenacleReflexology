@@ -45,6 +45,51 @@
                 </div>
             </div>
 
+            {* Cenacle Services & Pricing Quick Reference *}
+            <div class="cenacle-quick-pricing my-2 p-2 border rounded bg-white shadow-sm">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="fw-bold" style="color:var(--cenacle-primary,#2C6E6E);font-size:0.85rem;">
+                        <i class="bi bi-tag-fill me-1"></i> Cenacle Services, Pricing &amp; Bed Allocation Guide
+                    </span>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#cenaclePricingGuide" aria-expanded="true" style="font-size:0.75rem;">
+                        Show / Hide Menu
+                    </button>
+                </div>
+                <div class="collapse show mt-2 pt-2 border-top" id="cenaclePricingGuide">
+                    <div class="row g-2 text-start" style="font-size:0.78rem;">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="p-2 rounded border" style="background:#f0f7ff;border-color:#b9d9fc !important;">
+                                <div class="fw-bold text-primary mb-1"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#4A90D9;" class="me-1"></span> Foot Reflexology <span class="badge bg-secondary ms-1">Chairs 1–6</span></div>
+                                <div>• 30 min: <strong>900 Birr</strong></div>
+                                <div>• 1 hour: <strong>1,300 Birr</strong></div>
+                                <div>• 1h 30m: <strong>2,000 Birr</strong></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="p-2 rounded border" style="background:#faf5ff;border-color:#e2d4fd !important;">
+                                <div class="fw-bold mb-1" style="color:#6d28d9;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8B5CF6;" class="me-1"></span> Body Massages <span class="badge bg-danger ms-1">BED ONLY</span></div>
+                                <div>• 30 min Back: <strong>1,200 Birr</strong></div>
+                                <div>• 1 hr Full Body: <strong>2,000 Birr</strong></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="p-2 rounded border" style="background:#f0fdf4;border-color:#bbf7d0 !important;">
+                                <div class="fw-bold mb-1" style="color:#15803d;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#5FAD8E;" class="me-1"></span> Head &amp; Shoulder <span class="badge bg-secondary ms-1">Chairs 1–6</span></div>
+                                <div>• 20 min: <strong>500 Birr</strong></div>
+                                <div>• 30 min: <strong>700 Birr</strong></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="p-2 rounded border" style="background:#fff7ed;border-color:#fed7aa !important;">
+                                <div class="fw-bold mb-1" style="color:#c2410c;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#E8865A;" class="me-1"></span> Hand Reflexology <span class="badge bg-secondary ms-1">Chairs 1–6</span></div>
+                                <div>• 20 min: <strong>500 Birr</strong></div>
+                                <div>• 30 min: <strong>700 Birr</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row gx-2">
                 <div class="reservationTitle col-12 border-bottom py-2">
                     <div class="form-group">
