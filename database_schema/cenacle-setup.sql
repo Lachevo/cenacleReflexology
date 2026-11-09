@@ -46,6 +46,22 @@ ALTER TABLE `users`      AUTO_INCREMENT = 1;
 ALTER TABLE `custom_attributes` AUTO_INCREMENT = 1;
 
 -- ---------------------------------------------------------------------------
+-- 0b. Re-seed essential lookup tables (wiped by DELETE block above)
+-- ---------------------------------------------------------------------------
+INSERT IGNORE INTO `user_statuses` (`status_id`, `description`) VALUES
+    (1, 'Active'), (2, 'Awaiting'), (3, 'Inactive');
+
+INSERT IGNORE INTO `roles` (`role_id`, `name`, `role_level`) VALUES
+    (1, 'Group Admin', 1),
+    (2, 'Application Admin', 2);
+
+INSERT IGNORE INTO `reservation_types` (`type_id`, `label`) VALUES
+    (1, 'Reservation'), (2, 'Blackout');
+
+INSERT IGNORE INTO `reservation_statuses` (`status_id`, `label`) VALUES
+    (1, 'Created'), (2, 'Deleted'), (3, 'Pending');
+
+-- ---------------------------------------------------------------------------
 -- 1. Groups & Roles
 -- ---------------------------------------------------------------------------
 -- role_id: 1 = Group Admin, 2 = Application Admin, 4 = Schedule Admin
@@ -71,8 +87,8 @@ INSERT INTO `group_roles` (`group_id`, `role_id`) VALUES
 -- ---------------------------------------------------------------------------
 
 -- Layout 1: Cenacle Main (Ethiopia / Addis Ababa)
-INSERT INTO `layouts` (`layout_id`, `timezone`, `is_using_single_layout`)
-VALUES (1, 'Africa/Addis_Ababa', 0);
+INSERT INTO `layouts` (`layout_id`, `timezone`)
+VALUES (1, 'Africa/Addis_Ababa');
 
 -- Time blocks: 20-minute slots from 14:30 to 02:30+1 day
 -- availability_code: 2 = unavailable, 1 = available
@@ -120,8 +136,8 @@ INSERT INTO `time_blocks` (`availability_code`, `layout_id`, `start_time`, `end_
 (1, 1, '23:40', '00:00');
 
 -- Layout 2: Sunday layout – opens later (16:00 instead of 14:30)
-INSERT INTO `layouts` (`layout_id`, `timezone`, `is_using_single_layout`)
-VALUES (2, 'Africa/Addis_Ababa', 0);
+INSERT INTO `layouts` (`layout_id`, `timezone`)
+VALUES (2, 'Africa/Addis_Ababa');
 
 INSERT INTO `time_blocks` (`availability_code`, `layout_id`, `start_time`, `end_time`) VALUES
 (1, 2, '00:00', '00:20'),
@@ -177,43 +193,43 @@ VALUES (1, 'Cenacle Main', 1, 1, 7, 1);
 -- ---------------------------------------------------------------------------
 
 -- Chair 1
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (1, 'Chair 1', 'Available for Foot Reflexology, Head & Shoulder, Hand Reflexology', 1,
         1200, 1200, 5400, 300, 1, 0, 0, 1);
 
 -- Chair 2
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (2, 'Chair 2', 'Available for Foot Reflexology, Head & Shoulder, Hand Reflexology', 1,
         1200, 1200, 5400, 300, 1, 0, 0, 1);
 
 -- Chair 3
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (3, 'Chair 3', 'Available for Foot Reflexology, Head & Shoulder, Hand Reflexology', 1,
         1200, 1200, 5400, 300, 1, 0, 0, 1);
 
 -- Chair 4
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (4, 'Chair 4', 'Available for Foot Reflexology, Head & Shoulder, Hand Reflexology', 1,
         1200, 1200, 5400, 300, 1, 0, 0, 1);
 
 -- Chair 5
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (5, 'Chair 5', 'Available for Foot Reflexology, Head & Shoulder, Hand Reflexology', 1,
         1200, 1200, 5400, 300, 1, 0, 0, 1);
 
 -- Chair 6
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (6, 'Chair 6', 'Available for Foot Reflexology, Head & Shoulder, Hand Reflexology', 1,
         1200, 1200, 5400, 300, 1, 0, 0, 1);
 
 -- Massage Bed  (Full Body & Back Massage only)
-INSERT INTO `resources` (`resource_id`, `name`, `description`, `isactive`, `min_duration`, `min_increment`, `max_duration`,
+INSERT INTO `resources` (`resource_id`, `name`, `description`, `status_id`, `min_duration`, `min_increment`, `max_duration`,
                           `buffer_time`, `autoassign`, `requires_approval`, `allow_multiday_reservations`, `schedule_id`)
 VALUES (7, 'Massage Bed', 'Available for Full Body Massage and Back Massage', 1,
         1800, 1200, 5400, 300, 1, 0, 0, 1);
