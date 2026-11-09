@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: cenacle_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: cenacle_booking
+      MYSQL_USER: cenacle_user
+      MYSQL_PASSWORD: cenacle_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - cenacle_db_data:/var/lib/mysql
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+
+  app:
+    build: .
+    container_name: cenacle_app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - TZ=Africa/Addis_Ababa
+    depends_on:
+      - db
+
+volumes:
+  cenacle_db_data:
+
