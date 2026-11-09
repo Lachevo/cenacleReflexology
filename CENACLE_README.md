@@ -48,9 +48,10 @@ This repository has been customized for **Cenacle Reflexology** according to you
 
 ## 4. Architecture & Customized Components
 
-### A. Styling Plugin (`plugins/Styling/Cenacle/`)
+### A. Styling Plugin (`plugins/Styling/CenacleStyling/`)
 - Injects `Cenacle.css` with a minimal, modern aesthetic: deep teal primary branding (`#2C6E6E`), high-contrast reservation blocks, clean cards, and responsive table styling.
 - Dynamically assigns service colors to every reservation block on the schedule grid based on the treatment selected or title keywords (`foot` → blue, `full body` → purple, etc.).
+- Enabled via `'plugins' => ['styling' => 'CenacleStyling']` in `config/config.php`.
 
 ### B. Business Rules Plugin (`plugins/PreReservation/Cenacle/`)
 - Enforces bed-vs-chair rules:
@@ -79,8 +80,18 @@ This repository has been customized for **Cenacle Reflexology** according to you
 - Sets up Administrator (`admin@cenacle.com`) and Staff role groups.
 
 ### E. User Interface Enhancements
+- **Drag & Drop Quick Intake Tray (`tpl/Schedule/schedule.tpl`)**:
+  - Staff can drag any of the 5 treatment badges directly onto any open slot in the schedule.
+  - Interactive validation: Dropping a Bed massage onto a Chair, or Reflexology onto the Massage Bed, is immediately blocked with an explanatory warning.
+  - Interactive Intake Modal: Pops up upon drop, asking for:
+    1. **Duration & Price** (pre-selected to standard duration with 1-click alternatives).
+    2. **Customer Name** (required).
+    3. **Phone Number** (for return lookup).
+    4. **Number of Persons** (party size).
+    5. **Notes / Special Requests** (pressure preferences, soreness, etc.).
+  - Calculates the exact end date/time and passes all intake data to the booking engine with 1-click confirmation.
 - **Global Header**: Features clean Cenacle Reflexology branding mark, ready for custom logo upload, plus a persistent quick color legend for the 5 treatment families.
-- **Booking Creation Screen (`tpl/Reservation/create.tpl`)**: Includes a collapsible **Cenacle Services, Pricing & Bed Allocation Guide** right above the form, giving staff instant access to prices and bed requirements while on the phone with customers.
+- **Booking Creation Screen (`tpl/Reservation/create.tpl`)**: Includes a collapsible **Cenacle Services, Pricing & Bed Allocation Guide** right above the form, and pre-fills all intake data from drag-and-drop sessions.
 - **Schedule Screen (`tpl/Schedule/schedule.tpl`)**: Displays a dedicated treatment category legend alongside the standard status markers.
 
 ---
@@ -88,6 +99,14 @@ This repository has been customized for **Cenacle Reflexology** according to you
 ## 5. Deployment & First-Time Setup Instructions
 
 ### Step 1: Database Setup
+
+**Option A (Automated - 1 command)**:
+```bash
+# Usage: ./scripts/setup-cenacle-db.sh [db_name] [db_user] [db_password] [db_host]
+./scripts/setup-cenacle-db.sh cenacle_booking cenacle_user your_secure_password localhost
+```
+
+**Option B (Manual)**:
 1. Create a MySQL/MariaDB database:
    ```sql
    CREATE DATABASE cenacle_booking CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -95,15 +114,15 @@ This repository has been customized for **Cenacle Reflexology** according to you
    GRANT ALL PRIVILEGES ON cenacle_booking.* TO 'cenacle_user'@'localhost';
    FLUSH PRIVILEGES;
    ```
-2. Import the base LibreBooking schema:
+2. Import the base schema:
    ```bash
    mysql -u cenacle_user -p cenacle_booking < database_schema/create-schema.sql
-   mysql -u cenacle_user -p cenacle_booking < database_schema/create-data.sql
    ```
-3. Run schema upgrades (if starting fresh):
+3. Run version upgrades (required so all modern columns exist):
    ```bash
-   # Run upgrade scripts sequentially or execute setup:
-   bash database_schema/setup-database.sh
+   for f in $(ls -v database_schema/upgrades/*/*.sql 2>/dev/null); do
+       mysql -u cenacle_user -p cenacle_booking < "$f" 2>/dev/null || true
+   done
    ```
 4. Apply the Cenacle custom seed data:
    ```bash

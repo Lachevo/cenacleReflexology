@@ -19,11 +19,13 @@ class SetAdminFirstRegistrationStrategy implements IFirstRegistrationStrategy
         if ($users == 1) {
             $configFile = ROOT_DIR . 'config/config.php';
 
-            if (file_exists($configFile)) {
+            if (file_exists($configFile) && is_writable($configFile)) {
                 $str = file_get_contents($configFile);
-                $str = str_replace('admin@example.com', $user->EmailAddress(), $str);
-                file_put_contents($configFile, $str);
-                $this->ReloadCachedConfig();
+                if (str_contains($str, 'admin@example.com')) {
+                    $str = str_replace('admin@example.com', $user->EmailAddress(), $str);
+                    @file_put_contents($configFile, $str);
+                    $this->ReloadCachedConfig();
+                }
             }
 
             $groups = $user->Groups();
