@@ -48,7 +48,7 @@ class CenacleValidation implements IReservationValidationService
                           str_contains($combinedText, 'shoulder') ||
                           str_contains($combinedText, 'hand');
 
-        $allResources = $series->AllResources();
+        $allResources = array_filter($series->AllResources() ?? []);
         if (empty($allResources)) {
             $primary = $series->Resource();
             if ($primary) {
@@ -57,8 +57,9 @@ class CenacleValidation implements IReservationValidationService
         }
 
         foreach ($allResources as $res) {
-            $name = strtolower($res->GetName());
-            $isBed = str_contains($name, 'bed');
+            if (!$res) continue;
+            $name = strtolower($res->GetName() ?? '');
+            $isBed = str_contains($name, 'bed') || ($res->GetId() == 7);
 
             if ($isBedService && !$isBed) {
                 return 'Full Body Massage and Back Massage require a treatment bed. Please select the Massage Bed.';
@@ -78,35 +79,40 @@ class CenacleValidation implements IReservationValidationService
      */
     private function ValidateOperatingHours($series): ?string
     {
-        $instances = $series->Instances();
-        foreach ($instances as $instance) {
-            /** @var Date $startDate */
-            $startDate = $instance->StartDate();
-            if (!$startDate) {
-                continue;
+        try {
+            $instances = $series->Instances() ?? [];
+            foreach ($instances as $instance) {
+                if (!$instance) continue;
+                /** @var Date $startDate */
+                $startDate = $instance->StartDate();
+                if (!$startDate) {
+                    continue;
+                }
+
+                // Convert to Addis Ababa local time
+                $local = $startDate->ToTimezone('Africa/Addis_Ababa');
+                $hour = (int)$local->Format('H');
+                $min = (int)$local->Format('i');
+                $dayOfWeek = (int)$local->Format('w'); // 0 = Sunday, 1 = Monday ... 6 = Saturday
+
+                $minutesSinceMidnight = ($hour * 60) + $min;
+
+                // Cutoff check: between 01:31 AM and 02:30 AM is prohibited (last reservation at 1:30 AM)
+                if ($minutesSinceMidnight > 90 && $minutesSinceMidnight <= 150) {
+                    return 'Reservations can only be placed up until 1:30 AM. Cenacle closes at 2:30 AM.';
+                }
+
+                // Closed hours check: between 02:30 AM (150m) and opening time
+                // Sunday opens at 16:00 (960m), Mon–Sat opens at 14:30 (870m)
+                $openMinutes = ($dayOfWeek === 0) ? 960 : 870;
+
+                if ($minutesSinceMidnight > 150 && $minutesSinceMidnight < $openMinutes) {
+                    $openTimeStr = ($dayOfWeek === 0) ? '4:00 PM (Sunday)' : '2:30 PM (Mon–Sat)';
+                    return "Cenacle is closed at this time. Opening time is $openTimeStr.";
+                }
             }
-
-            // Convert to Addis Ababa local time
-            $local = $startDate->ToTimezone('Africa/Addis_Ababa');
-            $hour = (int)$local->Format('H');
-            $min = (int)$local->Format('i');
-            $dayOfWeek = (int)$local->Format('w'); // 0 = Sunday, 1 = Monday ... 6 = Saturday
-
-            $minutesSinceMidnight = ($hour * 60) + $min;
-
-            // Cutoff check: between 01:31 AM and 02:30 AM is prohibited (last reservation at 1:30 AM)
-            if ($minutesSinceMidnight > 90 && $minutesSinceMidnight <= 150) {
-                return 'Reservations can only be placed up until 1:30 AM. Cenacle closes at 2:30 AM.';
-            }
-
-            // Closed hours check: between 02:30 AM (150m) and opening time
-            // Sunday opens at 16:00 (960m), Mon–Sat opens at 14:30 (870m)
-            $openMinutes = ($dayOfWeek === 0) ? 960 : 870;
-
-            if ($minutesSinceMidnight > 150 && $minutesSinceMidnight < $openMinutes) {
-                $openTimeStr = ($dayOfWeek === 0) ? '4:00 PM (Sunday)' : '2:30 PM (Mon–Sat)';
-                return "Cenacle is closed at this time. Opening time is $openTimeStr.";
-            }
+        } catch (\Throwable $t) {
+            error_log('ValidateOperatingHours error: ' . $t->getMessage());
         }
 
         return null;
