@@ -91,7 +91,58 @@
             </div>
 
             <div class="row gx-2">
-                <div class="reservationTitle col-12 border-bottom py-2">
+                <!-- Cenacle Treatment Dropdown & Customer Name Section -->
+                <div class="col-12 py-3 border-bottom">
+                    <div class="p-3 rounded bg-white border shadow-sm" style="border-left: 5px solid #2C6E6E !important;">
+                        <div class="row g-3">
+                            <div class="col-md-7 col-12">
+                                <label class="fw-bold mb-1 d-flex align-items-center gap-1 text-dark fs-6" for="cenacleTreatmentSelect">
+                                    <i class="bi bi-tag-fill text-success"></i>
+                                    <span>Select Treatment Type</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="cenacleTreatmentSelect" class="form-select form-select-md border-primary-subtle fw-semibold">
+                                    <option value="">-- Choose Treatment / Service --</option>
+                                    <optgroup label="Foot Reflexology (Chairs 1–6)">
+                                        <option value="Foot Reflexology – 30 min (900 Birr)" data-minutes="30" data-price="900">Foot Reflexology – 30 min (900 Birr)</option>
+                                        <option value="Foot Reflexology – 1 hr (1,300 Birr)" data-minutes="60" data-price="1300">Foot Reflexology – 1 hr (1,300 Birr)</option>
+                                        <option value="Foot Reflexology – 1.5 hr (2,000 Birr)" data-minutes="90" data-price="2000">Foot Reflexology – 1.5 hr (2,000 Birr)</option>
+                                    </optgroup>
+                                    <optgroup label="Body & Back Massages (Massage Bed Only)">
+                                        <option value="Full Body Massage – 1 hr (2,000 Birr)" data-minutes="60" data-price="2000">Full Body Massage – 1 hr (2,000 Birr)</option>
+                                        <option value="Back Massage – 30 min (1,200 Birr)" data-minutes="30" data-price="1200">Back Massage – 30 min (1,200 Birr)</option>
+                                    </optgroup>
+                                    <optgroup label="Head, Shoulder & Hand Reflexology (Chairs 1–6)">
+                                        <option value="Head & Shoulder Massage – 20 min (500 Birr)" data-minutes="20" data-price="500">Head & Shoulder Massage – 20 min (500 Birr)</option>
+                                        <option value="Head & Shoulder Massage – 30 min (700 Birr)" data-minutes="30" data-price="700">Head & Shoulder Massage – 30 min (700 Birr)</option>
+                                        <option value="Hand Reflexology – 20 min (500 Birr)" data-minutes="20" data-price="500">Hand Reflexology – 20 min (500 Birr)</option>
+                                        <option value="Hand Reflexology – 30 min (700 Birr)" data-minutes="30" data-price="700">Hand Reflexology – 30 min (700 Birr)</option>
+                                    </optgroup>
+                                    <option value="__CUSTOM__">✏️ Custom / Other (type custom details below)...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5 col-12">
+                                <label class="fw-bold mb-1 d-flex align-items-center gap-1 text-dark fs-6" for="cenacleCustomerNameInput">
+                                    <i class="bi bi-person-fill text-primary"></i>
+                                    <span>Customer Name</span>
+                                </label>
+                                <input type="text" id="cenacleCustomerNameInput" class="form-control form-control-md" placeholder="e.g. Abebe Kebede">
+                            </div>
+                        </div>
+
+                        <!-- Custom Treatment field: shown when "Custom / Other" is selected -->
+                        <div id="cenacleCustomTreatmentArea" class="mt-3 p-2 bg-light rounded border border-warning" style="display: none;">
+                            <label class="fw-bold mb-1 text-dark d-flex align-items-center gap-1" for="cenacleCustomTreatmentText">
+                                <i class="bi bi-pencil-square text-warning fs-5"></i>
+                                <span>Write Custom Treatment Details / Special Instructions:</span>
+                            </label>
+                            <input type="text" id="cenacleCustomTreatmentText" class="form-control" placeholder="e.g. Foot + Shoulder Combo (Special 1,500 Birr)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden native title field kept in sync for LibreBooking form submission -->
+                <div class="reservationTitle col-12 border-bottom py-2" style="display:none;" id="cenacleNativeTitleWrapper">
                     <div class="form-group">
                         <label class="fw-bold mb-0" for="reservationTitle">{translate key="ReservationTitle"}
                             {if $TitleRequired}
@@ -713,5 +764,274 @@
             });
         }
     </script>
+
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+    function norm(str) {
+        return (str || '').toLowerCase()
+            .replace(/&amp;/g, '&')
+            .replace(/[\u2013\u2014\u2212\-]/g, '-')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    const treatmentSelect = $('#cenacleTreatmentSelect');
+    const customerInput   = $('#cenacleCustomerNameInput');
+    const customArea      = $('#cenacleCustomTreatmentArea');
+    const customText      = $('#cenacleCustomTreatmentText');
+    const nativeTitle     = $('#reservationTitle');
+
+    // ── Helper: Synchronize Title & Custom Attributes ──────────────
+    function syncCenacleTitle() {
+        const selectedVal = treatmentSelect.val();
+        const custName    = (customerInput.val() || '').trim();
+        let treatDisplay  = '';
+
+        if (selectedVal === '__CUSTOM__') {
+            treatDisplay = (customText.val() || '').trim();
+        } else if (selectedVal) {
+            treatDisplay = selectedVal;
+        }
+
+        // Build Title
+        let finalTitle = '';
+        if (custName && treatDisplay) {
+            finalTitle = custName + ' – ' + treatDisplay;
+        } else if (custName) {
+            finalTitle = custName;
+        } else if (treatDisplay) {
+            finalTitle = treatDisplay;
+        }
+
+        nativeTitle.val(finalTitle);
+
+        // Sync to custom attributes dropdown if present
+        const customAttrSelect = $('#custom-attributes-placeholder select');
+        if (customAttrSelect.length > 0 && selectedVal && selectedVal !== '__CUSTOM__') {
+            const targetNorm = norm(selectedVal);
+            customAttrSelect.find('option').each(function() {
+                if (norm($(this).val()) === targetNorm || norm($(this).text()) === targetNorm) {
+                    customAttrSelect.val($(this).val()).trigger('change');
+                    return false;
+                }
+            });
+        }
+    }
+
+    // ── Dropdown Change Event ───────────────────────────────────────
+    treatmentSelect.on('change', function() {
+        const val = $(this).val();
+        if (val === '__CUSTOM__') {
+            customArea.slideDown(200);
+            customText.focus();
+        } else {
+            customArea.slideUp(150);
+        }
+
+        // Auto-adjust end time if minutes data attribute is available
+        const selectedOpt = $(this).find('option:selected');
+        const minutes = parseInt(selectedOpt.attr('data-minutes') || '0', 10);
+        if (minutes > 0) {
+            try {
+                const beginPeriod = $('#BeginPeriod').val();
+                if (beginPeriod) {
+                    // Try to calculate matching EndPeriod
+                    const parts = beginPeriod.split(':');
+                    if (parts.length >= 2) {
+                        const totalMins = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10) + minutes;
+                        const endH = Math.floor(totalMins / 60) % 24;
+                        const endM = totalMins % 60;
+                        function p2(n) { return (n < 10 ? '0' : '') + n; }
+                        const targetEndPrefix = p2(endH) + ':' + p2(endM);
+                        $('#EndPeriod option').each(function() {
+                            if ($(this).val().indexOf(targetEndPrefix) === 0 || $(this).text().indexOf(targetEndPrefix) !== -1) {
+                                $('#EndPeriod').val($(this).val()).trigger('change');
+                                return false;
+                            }
+                        });
+                    }
+                }
+            } catch(e) {}
+        }
+
+        syncCenacleTitle();
+    });
+
+    customerInput.on('input keyup change', syncCenacleTitle);
+    customText.on('input keyup change', syncCenacleTitle);
+
+    // ── Check if opened via Drag-and-Drop Intake ────────────────────
+    const rawPayload = sessionStorage.getItem('cenacle_intake_payload');
+    let payload = null;
+    if (rawPayload) {
+        try { payload = JSON.parse(rawPayload); } catch(e) {}
+    }
+
+    if (payload) {
+        // Pre-fill Customer Name & Treatment
+        if (payload.customerName) {
+            customerInput.val(payload.customerName);
+        }
+        if (payload.resourceId) {
+            const resInput = $('#primaryResourceId');
+            if (resInput.length && (!resInput.val() || resInput.val() === '0')) {
+                resInput.val(payload.resourceId);
+            }
+        }
+
+        const targetTreatment = payload.dropdownValue || payload.treatment;
+        let matchedInSelect = false;
+        if (targetTreatment) {
+            const targetNorm = norm(targetTreatment);
+            treatmentSelect.find('option').each(function() {
+                if (norm($(this).val()) === targetNorm || norm($(this).text()) === targetNorm) {
+                    treatmentSelect.val($(this).val());
+                    matchedInSelect = true;
+                    return false;
+                }
+            });
+            if (!matchedInSelect) {
+                // If custom treatment
+                treatmentSelect.val('__CUSTOM__');
+                customArea.show();
+                customText.val(targetTreatment);
+            }
+        }
+
+        syncCenacleTitle();
+
+        // Show banner
+        const bannerHtml = `
+            <div id="cenacle-intake-banner" class="alert alert-success d-flex align-items-center justify-content-between p-3 my-2 rounded shadow-sm" style="border-left: 5px solid #2C6E6E; background-color: #f0fdf4;">
+                <div>
+                    <div class="fw-bold text-success fs-6"><i class="bi bi-magic me-1"></i> Quick Intake Pre-filled from Drag &amp; Drop:</div>
+                    <div class="text-dark mt-1">
+                        Customer: <strong>${payload.customerName}</strong> • Treatment: <strong>${payload.dropdownValue || payload.treatment}</strong>
+                        ${payload.phone ? ` • Phone: <strong>${payload.phone}</strong>` : ''}
+                        • Persons: <strong>${payload.persons}</strong>
+                    </div>
+                    <div class="small text-muted mt-1" id="cenacle-intake-status-msg">
+                        <i class="bi bi-shield-check text-success me-1"></i> Zero Double-Booking: 5-minute cleaning buffer held automatically after this reservation.
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        $('.reservationHeader').after(bannerHtml);
+    } else {
+        // Direct new reservation or editing: check if existing title matches a treatment
+        const currentTitle = nativeTitle.val();
+        if (currentTitle) {
+            let matched = false;
+            const titleNorm = norm(currentTitle);
+            treatmentSelect.find('option').each(function() {
+                if ($(this).val() && $(this).val() !== '__CUSTOM__' && titleNorm.indexOf(norm($(this).val())) !== -1) {
+                    treatmentSelect.val($(this).val());
+                    matched = true;
+                    return false;
+                }
+            });
+            if (!matched) {
+                customerInput.val(currentTitle);
+            }
+        }
+    }
+
+    // ── Poll for custom attributes to load via AJAX ─────────────────
+    let attempts = 0;
+    const maxAttempts = 60; // 6 seconds
+    const pollInterval = setInterval(function() {
+        attempts++;
+        const customAttrContainer = $('#custom-attributes-placeholder');
+        const customSelect = customAttrContainer.find('select');
+
+        if (customSelect.length > 0 || attempts >= maxAttempts) {
+            clearInterval(pollInterval);
+            sessionStorage.removeItem('cenacle_intake_payload');
+
+            if (customSelect.length > 0) {
+                // If treatment is already selected in top dropdown, apply it to customSelect
+                const topVal = treatmentSelect.val();
+                if (topVal && topVal !== '__CUSTOM__') {
+                    const topNorm = norm(topVal);
+                    customSelect.find('option').each(function() {
+                        if (norm($(this).val()) === topNorm || norm($(this).text()) === topNorm) {
+                            customSelect.val($(this).val()).trigger('change');
+                            return false;
+                        }
+                    });
+                }
+
+                // If user changes customSelect, sync back to top dropdown
+                customSelect.on('change', function() {
+                    const v = $(this).val();
+                    if (v) {
+                        const cNorm = norm(v);
+                        treatmentSelect.find('option').each(function() {
+                            if (norm($(this).val()) === cNorm) {
+                                treatmentSelect.val($(this).val());
+                                customArea.hide();
+                                syncCenacleTitle();
+                                return false;
+                            }
+                        });
+                    }
+                });
+
+                if (payload) {
+                    // Match Persons
+                    const personsInput = customAttrContainer.find('#psiattribute2, input[name*="psiattribute[2]"]');
+                    if (personsInput.length) {
+                        personsInput.val(payload.persons || '1').trigger('change');
+                    } else {
+                        customAttrContainer.find('input[type="text"]').each(function() {
+                            const label = $(this).closest('.form-group, .customAttribute').find('label').text().toLowerCase();
+                            if (label.indexOf('person') !== -1) {
+                                $(this).val(payload.persons || '1').trigger('change');
+                            }
+                        });
+                    }
+
+                    // Match Phone Number
+                    const phoneInput = customAttrContainer.find('#psiattribute3, input[name*="psiattribute[3]"]');
+                    if (phoneInput.length) {
+                        phoneInput.val(payload.phone || '').trigger('change');
+                    } else {
+                        customAttrContainer.find('input[type="text"]').each(function() {
+                            const label = $(this).closest('.form-group, .customAttribute').find('label').text().toLowerCase();
+                            if (label.indexOf('phone') !== -1) {
+                                $(this).val(payload.phone || '').trigger('change');
+                            }
+                        });
+                    }
+
+                    // Match Notes
+                    const notesInput = customAttrContainer.find('#psiattribute4, textarea[name*="psiattribute[4]"]');
+                    if (notesInput.length) {
+                        notesInput.val(payload.notes || '').trigger('change');
+                    } else {
+                        customAttrContainer.find('textarea').each(function() {
+                            const label = $(this).closest('.form-group, .customAttribute').find('label').text().toLowerCase();
+                            if (label.indexOf('note') !== -1) {
+                                $(this).val(payload.notes || '').trigger('change');
+                            }
+                        });
+                    }
+
+                    // Auto-submit if requested
+                    if (payload.autoSubmit) {
+                        $('#cenacle-intake-status-msg').html('<span class="spinner-border spinner-border-sm text-success me-1"></span> Finalizing and creating reservation...');
+                        setTimeout(function() {
+                            $('.btnCreate, .btn-primary.save.create').first().click();
+                        }, 400);
+                    }
+                }
+            }
+        }
+    }, 100);
+});
+</script>
+{/literal}
 
     {include file='globalfooter.tpl'}
