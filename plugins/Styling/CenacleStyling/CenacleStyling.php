@@ -14,7 +14,7 @@
  *   "Head" / "Shoulder"       → cenacle-headshoulder  (sage   #5FAD8E)
  *   "Hand Reflexology"        → cenacle-hand          (coral  #E8865A)
  */
-class Cenacle implements IStylingFactory
+class CenacleStyling implements IStylingFactory
 {
     private StylingFactory $factoryToDecorate;
 
