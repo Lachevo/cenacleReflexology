@@ -173,7 +173,10 @@ class ReservationSavePage extends SecurePage implements IReservationSavePage
                 $this->Display('Ajax/reservation/save_failed.tpl');
             }
         } catch (Exception $ex) {
+            @file_put_contents('/tmp/librebooking_save_error.log', date('Y-m-d H:i:s') . ' ' . (string)$ex . "\n\n", FILE_APPEND);
+            error_log('ReservationSavePage - Critical error saving reservation: ' . (string)$ex);
             Log::Error('ReservationSavePage - Critical error saving reservation: %s', $ex);
+            $this->Set('ErrorMessageDetail', $ex->getMessage());
             $this->Display('Ajax/reservation/reservation_error.tpl');
         }
     }
