@@ -130,8 +130,8 @@
     {if !isset($HideNavBar) || $HideNavBar == false}
         <div class="d-flex align-items-center gap-2 m-2">
             <a class="navbar-brand" href="{$HomeUrl}">
-                {* Cenacle branding: show logo if one is uploaded, otherwise show minimal text mark *}
-                {if $LogoUrl neq 'img/logo.png' && $LogoUrl neq ''}
+                {* Cenacle branding: show logo if a custom one is uploaded, otherwise show Cenacle text mark *}
+                {if $LogoUrl neq 'img/logo.png' && $LogoUrl neq 'img/librebooking.png' && $LogoUrl neq ''}
                     <img src="{$Path}{$LogoUrl}?{$Version}" alt="Cenacle Reflexology" class="logo" style="max-height:52px;">
                 {else}
                     <div class="cenacle-text-logo d-flex flex-column" style="line-height:1.1;">

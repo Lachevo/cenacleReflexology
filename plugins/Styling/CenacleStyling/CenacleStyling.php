@@ -34,7 +34,7 @@ class CenacleStyling implements IStylingFactory
     }
 
     /**
-     * Return path to the Cenacle custom CSS file so LibreBooking
+     * Return path to the Cenacle custom CSS file so the application
      * serves it via styling-plugin.php.
      */
     public function AdditionalCSS(UserSession $userSession): string

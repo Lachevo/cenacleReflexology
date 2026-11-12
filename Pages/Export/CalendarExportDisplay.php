@@ -24,7 +24,7 @@ class CalendarExportDisplay extends Page
         // Values passed as constructor children are merged over getDefaults(),
         // replacing the PRODID that VCalendar would otherwise generate.
         $vcal = new VCalendar([
-            'PRODID' => '-//LibreBooking//NONSGML ' . Configuration::VERSION . '//EN',
+            'PRODID' => '-//Cenacle Reflexology//NONSGML ' . Configuration::VERSION . '//EN',
             'METHOD' => 'REQUEST',
         ]);
 

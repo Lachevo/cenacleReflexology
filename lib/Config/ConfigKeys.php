@@ -9,7 +9,7 @@ class ConfigKeys extends AbstractConfigKeys
     public const APP_TITLE = [
         'key' => 'app.title',
         'type' => 'string',
-        'default' => 'LibreBooking',
+        'default' => 'Cenacle Reflexology',
         'label' => 'App title',
         'description' => 'The title of the application displayed in the header and browser tab',
         'config_file_comment' => 'The public name of the application',

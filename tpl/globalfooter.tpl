@@ -13,7 +13,7 @@
 				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#5FAD8E;"></span> Head &amp; Shoulder
 				<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#E8865A;"></span> Hand Reflexology
 			</span>
-			<a class="link-secondary" href="https://github.com/LibreBooking/librebooking" style="font-size:0.65rem;opacity:0.5;">Powered by LibreBooking</a>
+			<span class="text-muted" style="font-size:0.65rem;opacity:0.6;">&copy; {$smarty.now|date_format:"%Y"} Cenacle Reflexology</span>
 		</div>
 	</footer>
 

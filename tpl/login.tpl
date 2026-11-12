@@ -26,8 +26,15 @@
             <div class="card shadow mb-2">
                 <div class="card-body mx-3">
                     <div id="login-box" class="default-box">
-                        <div class="login-icon my-2">
-                            <img src="{$Path}{$LogoUrl}?{$Version}" alt="{$Title}" class="mx-auto d-block w-50">
+                        <div class="login-icon my-3 text-center">
+                            {if $LogoUrl neq 'img/logo.png' && $LogoUrl neq 'img/librebooking.png' && $LogoUrl neq ''}
+                                <img src="{$Path}{$LogoUrl}?{$Version}" alt="{$Title}" class="mx-auto d-block w-50">
+                            {else}
+                                <div class="cenacle-login-logo py-2">
+                                    <div style="font-size:1.85rem;font-weight:700;color:var(--cenacle-primary,#2C6E6E);letter-spacing:0.06em;">CENACLE</div>
+                                    <div style="font-size:0.8rem;color:#6b7c7c;letter-spacing:0.18em;font-weight:600;text-transform:uppercase;">REFLEXOLOGY</div>
+                                </div>
+                            {/if}
                         </div>
 
                         {if $ShowLoginError}

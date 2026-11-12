@@ -4,30 +4,20 @@
     <div class="col-12 col-sm-8 mx-auto">
         <div class="card shadow">
             <div class="card-body">
-                <h1 class="text-center border-bottom">About LibreBooking</h1>
+                <h1 class="text-center border-bottom">About Cenacle Reflexology</h1>
 
-                <h2>Documentation</h2>
+                <h2>System</h2>
 
-                <p><a class="link-primary" href="https://librebooking.readthedocs.io/en/latest/">LibreBooking
-                        Documentation</a></p>
+                <p>Cenacle Reflexology Booking System is powered by customized open-source scheduling software, licensed under the GNU GENERAL PUBLIC LICENSE.</p>
 
-                <h2>Support</h2>
+                <h2>Documentation &amp; Support</h2>
 
-                <p><a class="link-primary" href="https://github.com/LibreBooking/librebooking">LibreBooking Support</a></p>
+                <p>For questions or support regarding Cenacle Reflexology operations, please contact the administrator.</p>
 
-                <p><a class="link-primary" href="https://discord.gg/4TGThPtmX8">LibreBooking Community discussion channel
-                        on Discord</a></p>
+                <h2>Credits &amp; License</h2>
 
-                <h2>Credits</h2>
-
-                <p>see <a class="link-primary"
-                        href="https://github.com/LibreBooking/librebooking/blob/develop/CONTRIBUTORS.md">CONTRIBUTORS.md</a>
-                </p>
-
-                <h2>License</h2>
-
-                <p>LibreBooking free and open source, licenced under the GNU GENERAL PUBLIC LICENSE. Please see the
-                    included License file for more details.</p>
+                <p>See <a class="link-primary"
+                        href="https://github.com/LibreBooking/librebooking/blob/develop/CONTRIBUTORS.md">CONTRIBUTORS.md</a> for underlying platform contributors. Please see the included License file for details.</p>
             </div>
         </div>
     </div>

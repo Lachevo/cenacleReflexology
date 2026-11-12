@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cenacle Reflexology – LibreBooking Configuration
+ * Cenacle Reflexology – Configuration
  *
  * Copy this file to config/config.php and fill in the database credentials.
  * All Cenacle-specific settings are pre-configured below.

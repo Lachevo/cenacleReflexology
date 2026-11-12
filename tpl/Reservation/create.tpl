@@ -141,7 +141,7 @@
                     </div>
                 </div>
 
-                <!-- Hidden native title field kept in sync for LibreBooking form submission -->
+                <!-- Hidden native title field kept in sync for Cenacle form submission -->
                 <div class="reservationTitle col-12 border-bottom py-2" style="display:none;" id="cenacleNativeTitleWrapper">
                     <div class="form-group">
                         <label class="fw-bold mb-0" for="reservationTitle">{translate key="ReservationTitle"}
