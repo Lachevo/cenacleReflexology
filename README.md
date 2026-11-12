@@ -1,4 +1,12 @@
 
+# Cenacle Reflexology Reservation System
+
+> [!NOTE]
+> **Cenacle Reflexology Custom Deployment**:
+> For complete functionality, operational rules, configuration settings reference, and staff guides, please see **[CENACLE_README.md](CENACLE_README.md)**.
+
+---
+
 # Librebooking
 
 > [!WARNING]
