@@ -347,29 +347,155 @@ All settings are configured in `config/config.php` (created from `config/cenacle
 
 ---
 
-## 8. Installation & Deployment Instructions
+## 8. Installation & Hosting Guide
 
-### Prerequisites
-- PHP >= 8.2 with extensions: `pdo_mysql`, `mysqli`, `mbstring`, `intl`, `xml`, `curl`
-- MySQL >= 8.0 or MariaDB >= 10.6
-- Web Server: Apache with `mod_rewrite` or Nginx
+LibreBooking is a LAMP/LEMP application. It requires:
+- **PHP**: `8.2` or higher (extensions: `pdo_mysql`, `mysqli`, `mbstring`, `intl`, `xml`, `curl`)
+- **Database**: MySQL `8.0+` or MariaDB `10.6+`
+- **Writable Directories**: `tpl_c/` and `uploads/` (`chmod 755`)
 
-### Quick Docker Setup
-```bash
-# 1. Clone repository
-git clone https://github.com/LibreBooking/librebooking.git cenacle
-cd cenacle
+---
 
-# 2. Launch Docker environment
-docker compose up -d
+### Option A: Free Hosting
 
-# 3. Initialize and seed database
-./scripts/init-docker-db.sh
+#### 1. Self-Host on Reception PC + Cloudflare Tunnel (⭐ Recommended Free Option)
+If there is a computer at the Cenacle front desk that stays on during business hours, you can run the system locally with zero hosting fees and securely access it from anywhere in the world.
 
-# 4. Access the application
-# URL: http://localhost:8080/Web/schedule.php
-# Admin: cenacle.admin / cenacle123
-```
+1. **Start the local Docker containers**:
+   ```bash
+   cd /home/lachevo/WK/librebooking
+   docker compose up -d
+   ```
+2. **Download & install Cloudflare Tunnel** (free, no credit card required):
+   ```bash
+   # Download cloudflared binary
+   curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+   sudo dpkg -i cloudflared.deb
+   ```
+3. **Expose the local server to a public HTTPS URL**:
+   ```bash
+   cloudflared tunnel --url http://localhost:8080
+   ```
+4. Cloudflare will output a secure public URL (e.g. `https://your-tunnel-name.trycloudflare.com`).
+5. Update `script.url` in `config/config.php`:
+   ```php
+   'script.url' => 'https://your-tunnel-name.trycloudflare.com/Web',
+   ```
+
+#### 2. InfinityFree (Cloud Free Hosting)
+- **Website**: [infinityfree.com](https://infinityfree.com)
+- **Specs**: Free subdomain (e.g. `cenacle.rf.gd`), 5 GB SSD storage, MySQL DB, cPanel.
+- **Setup Steps**:
+  1. Register at InfinityFree and create an account. Choose a free subdomain.
+  2. Open the **Control Panel → MySQL Databases** and create a new database.
+  3. Open **phpMyAdmin**, select your database, and import the SQL files in order:
+     - `database_schema/create-schema.sql`
+     - Upgrades in `database_schema/upgrades/`
+     - `database_schema/cenacle-setup.sql`
+  4. Use FileZilla (FTP) to upload all project files to `htdocs/`.
+  5. Edit `config/config.php` with the database credentials provided in your InfinityFree control panel.
+  6. Ensure `tpl_c/` and `uploads/` permissions are set to `755`.
+
+---
+
+### Option B: Ethiopian Hosting Providers 🇪🇹 (Pay in ETB with telebirr / CBE)
+
+For high-speed domestic performance and local payment methods without requiring international credit cards:
+
+#### 1. HahuCloud (⭐ Best Local cPanel Host)
+- **Website**: [hahucloud.com](https://www.hahucloud.com)
+- **Payment Methods**: **telebirr**, Commercial Bank of Ethiopia (CBE), Awash Bank, Dashen Bank.
+- **Cost**: ~1,500 – 3,500 ETB / year.
+- **Why it fits**: Provides modern cPanel with a PHP version selector supporting **PHP 8.2+**.
+- **Setup Steps**:
+  1. Purchase a shared hosting plan or VPS.
+  2. In cPanel, navigate to **MultiPHP Manager** and select **PHP 8.2**.
+  3. Under **MySQL Databases**, create `cenacle_booking` and a database user.
+  4. Under **phpMyAdmin**, import `create-schema.sql`, the version upgrades, and `cenacle-setup.sql`.
+  5. Upload your files to `public_html/` and update `config/config.php` with the database credentials and domain URL.
+
+#### 2. Ethio Telecom Cloud Hosting & VPS
+- **Website**: [ethiotelecom.et](https://www.ethiotelecom.et)
+- **Payment Methods**: **telebirr**, CBE Birr, bank transfer.
+- **Cost**: Shared hosting ~500–1,500 ETB/month; Cloud VPS ~2,500–5,000 ETB/month.
+- **Why it fits**: Hosted inside Ethio Telecom's national data centers for the lowest latency in Ethiopia.
+- **Recommendation**: If choosing Ethio Telecom, select their **Cloud VPS** so you can run the pre-configured Docker containers (`docker compose up -d`) directly on Ubuntu.
+
+#### 3. EthioHosting
+- **Website**: [ethiohosting.com](https://ethiohosting.com)
+- **Payment Methods**: CBE, telebirr, Awash.
+- **Cost**: ~1,800 – 4,000 ETB / year.
+- **Setup**: Standard cPanel workflow (select PHP 8.2, import MySQL database, upload files).
+
+#### 4. Registering an Official Ethiopian `.et` Domain
+- Register `.et` or `.com.et` domains via **EthioNIC** ([nic.et](https://www.nic.et)) or through HahuCloud / Ethio Telecom.
+- Cost: ~1,500 – 3,500 ETB / year.
+
+---
+
+### Option C: Paid International Hosting (Highest Reliability)
+
+| Provider | Plan | Approx. Price | Best For |
+| :--- | :--- | :--- | :--- |
+| **Hostinger** | Premium Shared | ~$2.99 / month | Easiest cPanel-style dashboard, free SSL, 1-click backups |
+| **DigitalOcean** | Droplet (1 GB RAM, Ubuntu) | $6.00 / month | Running your exact Docker setup in the cloud ($200 free trial) |
+| **AWS Lightsail** | LAMP / Linux Instance | $5.00 / month | High uptime, scalable Amazon infrastructure |
+
+#### DigitalOcean / VPS Deployment (Using Existing Docker):
+1. Create an Ubuntu 24.04 Droplet.
+2. SSH into your server:
+   ```bash
+   ssh root@your_server_ip
+   ```
+3. Install Docker:
+   ```bash
+   apt update && apt install docker.io docker-compose -y
+   ```
+4. Clone the repository and run:
+   ```bash
+   git clone https://github.com/LibreBooking/librebooking.git cenacle
+   cd cenacle
+   ./scripts/init-docker-db.sh
+   docker compose up -d
+   ```
+5. Set up free SSL with Certbot:
+   ```bash
+   apt install certbot python3-certbot-nginx -y
+   certbot --nginx -d yourdomain.com
+   ```
+
+---
+
+### Step-by-Step Production Deployment Checklist
+
+Regardless of which host you select, follow this deployment sequence:
+
+1. **Upload Files**: Place all repository files into the web root (`public_html/` or `/var/www/html/`).
+2. **Database Import Order**:
+   - `database_schema/create-schema.sql` (Base tables)
+   - Upgrades in `database_schema/upgrades/` (Schema updates)
+   - `database_schema/cenacle-setup.sql` (Cenacle schedules, chairs/bed, treatments, prices, and lookup tables)
+3. **Configure `config/config.php`**:
+   ```php
+   'script.url' => 'https://yourdomain.com/Web',
+   'database' => [
+       'type' => 'mysql',
+       'user' => 'your_db_user',
+       'password' => 'your_db_password',
+       'hostspec' => 'localhost',
+       'name' => 'cenacle_booking',
+   ],
+   'app.debug' => false,
+   ```
+4. **Set Directory Permissions**:
+   ```bash
+   chmod -R 755 tpl_c/ uploads/
+   ```
+5. **Clear Cache**:
+   ```bash
+   rm -rf tpl_c/*
+   ```
+6. **Change Default Admin Password**: Log in with `cenacle.admin` / `cenacle123` and update the password under **My Account → Change Password**.
 
 ---
 
