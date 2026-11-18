@@ -880,6 +880,25 @@ $(document).ready(function() {
             }
         }
 
+        // ── Auto-inject additional resource hidden inputs for group bookings ──
+        if (Array.isArray(payload.additionalResourceIds) && payload.additionalResourceIds.length > 0) {
+            const addResContainer = $('#additionalResources');
+            if (addResContainer.length) {
+                // Clear any existing additional resource inputs first
+                addResContainer.find('input.cenacle-auto-resource').remove();
+                payload.additionalResourceIds.forEach(function(rid) {
+                    addResContainer.append(
+                        $('<input>').attr({
+                            type: 'hidden',
+                            class: 'resourceId cenacle-auto-resource',
+                            name: 'additionalResources[]',
+                            value: parseInt(rid, 10)
+                        })
+                    );
+                });
+            }
+        }
+
         const targetTreatment = payload.dropdownValue || payload.treatment;
         let matchedInSelect = false;
         if (targetTreatment) {
@@ -902,6 +921,13 @@ $(document).ready(function() {
         syncCenacleTitle();
 
         // Show banner
+        const autoChairsInfo = (() => {
+            if (!Array.isArray(payload.additionalResourceIds) || payload.additionalResourceIds.length === 0) return '';
+            const all = [payload.resourceId, ...payload.additionalResourceIds];
+            const names = all.map(id => parseInt(id, 10) === 7 ? 'Massage Bed' : 'Chair ' + id);
+            return ' • <strong>Auto-assigned:</strong> ' + names.join(', ');
+        })();
+
         const bannerHtml = `
             <div id="cenacle-intake-banner" class="alert alert-success d-flex align-items-center justify-content-between p-3 my-2 rounded shadow-sm" style="border-left: 5px solid #2C6E6E; background-color: #f0fdf4;">
                 <div>
@@ -909,7 +935,7 @@ $(document).ready(function() {
                     <div class="text-dark mt-1">
                         Customer: <strong>${payload.customerName}</strong> • Treatment: <strong>${payload.dropdownValue || payload.treatment}</strong>
                         ${payload.phone ? ` • Phone: <strong>${payload.phone}</strong>` : ''}
-                        • Persons: <strong>${payload.persons}</strong>
+                        • Persons: <strong>${payload.persons}</strong>${autoChairsInfo}
                     </div>
                     <div class="small text-muted mt-1" id="cenacle-intake-status-msg">
                         <i class="bi bi-shield-check text-success me-1"></i> Zero Double-Booking: 5-minute cleaning buffer held automatically after this reservation.

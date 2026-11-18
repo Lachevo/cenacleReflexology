@@ -124,7 +124,7 @@ return [
         'checkin.timeout' => 15,
 
         # Maximum number of participants per reservation
-        'reservation.max.resources' => 1,
+        'reservation.max.resources' => 6,
 
         # Allow multiple people in a session (group booking)
         'reservation.allow.participants' => false,
@@ -136,6 +136,9 @@ return [
         # Show 7 days on the weekly view
         'schedule.days.visible' => 7,
         'schedule.show.inaccessible.resources' => false,
+
+        # Label to show on schedule grid cells: {title} shows Customer Name and Treatment Type
+        'schedule.reservation.label' => '{title}',
 
         # Colour reservations per user so each staff member sees their bookings highlighted
         'schedule.use.per.user.colors' => false,

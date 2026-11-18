@@ -99,7 +99,18 @@ class SlotLabelFactory
         }
         $label = $format;
         $label = str_replace('{name}', $name ?? '', $label);
-        $label = str_replace('{title}', $reservation->Title ?? '', $label);
+
+        $title = trim($reservation->Title ?? '');
+        if (empty($title)) {
+            // If Title is empty, check if Treatment custom attribute (id 1) is present
+            $treatment = $reservation->GetAttributeValue(1);
+            if (!empty($treatment)) {
+                $title = (!empty($name) && $name !== 'cenacle Admin') ? ($name . ' – ' . $treatment) : $treatment;
+            } else {
+                $title = $name ?? '';
+            }
+        }
+        $label = str_replace('{title}', $title, $label);
         $label = str_replace('{description}', $reservation->Description ?? '', $label);
         $label = str_replace('{email}', $reservation->OwnerEmailAddress, $label);
         $label = str_replace('{organization}', $reservation->OwnerOrganization ?? '', $label);

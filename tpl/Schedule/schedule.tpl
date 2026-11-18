@@ -673,8 +673,14 @@ FirstDay=$FirstWeekday}
                             <label for="cenacleCustomerPersons" class="form-label fw-bold mb-1">
                                 <i class="bi bi-people me-1 text-primary"></i> Persons
                             </label>
-                            <input type="number" class="form-control" id="cenacleCustomerPersons" min="1" max="10" value="1" required>
+                            <input type="number" class="form-control" id="cenacleCustomerPersons" min="1" max="6" value="1" required>
                         </div>
+                    </div>
+
+                    <!-- Auto-assigned chairs/bed preview -->
+                    <div id="cenacleAutoAssignPreview" class="alert alert-info py-2 px-3 small mb-3" style="display:none;">
+                        <i class="bi bi-layout-three-columns me-1"></i>
+                        <span id="cenacleAutoAssignText"></span>
                     </div>
 
                     <!-- Notes -->
@@ -1090,6 +1096,43 @@ FirstDay=$FirstWeekday}
         var personsEl = document.getElementById('cenacleCustomerPersons');
         if (personsEl) personsEl.value = '1';
 
+        // Reset auto-assign preview
+        function updateAutoAssignPreview() {
+            var preview = document.getElementById('cenacleAutoAssignPreview');
+            var previewText = document.getElementById('cenacleAutoAssignText');
+            if (!preview || !previewText) return;
+            var n = parseInt((document.getElementById('cenacleCustomerPersons') || {}).value || '1', 10);
+            var slot = window._cenacle.slot;
+            if (!slot || n <= 1) { preview.style.display = 'none'; return; }
+
+            var isBed = (slot.treatment && slot.treatment.allowed === 'bed');
+            if (isBed) {
+                previewText.innerHTML = '<strong>⚠️ The Massage Bed fits 1 person only.</strong> Persons will be capped to 1.';
+                preview.className = 'alert alert-warning py-2 px-3 small mb-3';
+                preview.style.display = '';
+                return;
+            }
+
+            var allChairs = [1, 2, 3, 4, 5, 6];
+            var primaryId = parseInt(slot.resourceId, 10);
+            var startIdx = allChairs.indexOf(primaryId);
+            if (startIdx === -1) startIdx = 0;
+            var assigned = ['<strong>Chair ' + primaryId + '</strong> (dropped)'];
+            for (var i = 1; i < n && i < 6; i++) {
+                var cid = allChairs[(startIdx + i) % allChairs.length];
+                if (cid !== primaryId) assigned.push('<strong>Chair ' + cid + '</strong>');
+            }
+            previewText.innerHTML = '🪑 Auto-assigning: ' + assigned.join(', ') + ' for ' + n + ' person' + (n > 1 ? 's' : '') + '.';
+            preview.className = 'alert alert-info py-2 px-3 small mb-3';
+            preview.style.display = '';
+        }
+
+        if (personsEl) {
+            personsEl.addEventListener('input', updateAutoAssignPreview);
+            personsEl.addEventListener('change', updateAutoAssignPreview);
+        }
+        updateAutoAssignPreview();
+
         showModal('cenacleIntakeModal');
 
         var modalEl = document.getElementById('cenacleIntakeModal');
@@ -1125,13 +1168,41 @@ FirstDay=$FirstWeekday}
                 var dropdownVal     = radio.getAttribute('data-dropdown') || '';
 
                 var phone   = (document.getElementById('cenacleCustomerPhone')   || {}).value || '';
-                var persons = (document.getElementById('cenacleCustomerPersons') || {}).value || '1';
+                var persons = parseInt((document.getElementById('cenacleCustomerPersons') || {}).value || '1', 10);
                 var notes   = (document.getElementById('cenacleCustomerNotes')   || {}).value || '';
                 var autoChk = document.getElementById('cenacleAutoSubmitCheck');
                 var autoSubmit = autoChk ? autoChk.checked : true;
 
                 var slot = window._cenacle.slot;
                 if (!slot) return;
+
+                // ── Auto-assign additional chairs/bed for group bookings ──
+                // Chair IDs: 1-6 (chair treatment); Bed ID: 7 (bed treatment)
+                var isBedTreatment = (slot.treatment.allowed === 'bed');
+                var primaryId = parseInt(slot.resourceId, 10);
+                var additionalResourceIds = [];
+
+                if (persons > 1) {
+                    if (isBedTreatment) {
+                        // Bed is a single unit — cap at 1 person, warn user
+                        alert('The Massage Bed can only accommodate 1 person at a time.\nBooking has been adjusted to 1 person.');
+                        persons = 1;
+                        var pEl = document.getElementById('cenacleCustomerPersons');
+                        if (pEl) pEl.value = '1';
+                    } else {
+                        // Chair treatment: auto-fill consecutive chairs starting from dropped one
+                        // All chair IDs: 1–6, wrapping around if necessary
+                        var allChairIds = [1, 2, 3, 4, 5, 6];
+                        var startIdx = allChairIds.indexOf(primaryId);
+                        if (startIdx === -1) startIdx = 0;
+                        for (var pi = 1; pi < persons && pi < 6; pi++) {
+                            var nextId = allChairIds[(startIdx + pi) % allChairIds.length];
+                            if (nextId !== primaryId) {
+                                additionalResourceIds.push(nextId);
+                            }
+                        }
+                    }
+                }
 
                 var startStr = slot.startStr;
                 var startObj = new Date(startStr.replace(/-/g, '/'));
@@ -1144,23 +1215,24 @@ FirstDay=$FirstWeekday}
                 var endStr = endObj.getFullYear() + '-' + p2(endObj.getMonth()+1) + '-' + p2(endObj.getDate()) +
                              ' ' + p2(endObj.getHours()) + ':' + p2(endObj.getMinutes()) + ':' + p2(endObj.getSeconds());
 
-                if (!dropdownVal) dropdownVal = slot.treatment.name + ' \u2013 ' + durationLabel;
+                if (!dropdownVal) dropdownVal = slot.treatment.name + ' – ' + durationLabel;
 
                 var payload = {
-                    treatment:       slot.treatment.name,
-                    dropdownValue:   dropdownVal,
-                    durationMinutes: durationMinutes,
-                    durationLabel:   durationLabel,
-                    price:           price,
-                    customerName:    name,
-                    phone:           phone.trim(),
-                    persons:         persons.trim(),
-                    notes:           notes.trim(),
-                    autoSubmit:      autoSubmit,
-                    resourceId:      slot.resourceId,
-                    resourceName:    slot.resourceName,
-                    startDate:       startStr,
-                    endDate:         endStr
+                    treatment:              slot.treatment.name,
+                    dropdownValue:          dropdownVal,
+                    durationMinutes:        durationMinutes,
+                    durationLabel:          durationLabel,
+                    price:                  price,
+                    customerName:           name,
+                    phone:                  phone.trim(),
+                    persons:                String(persons),
+                    notes:                  notes.trim(),
+                    autoSubmit:             autoSubmit,
+                    resourceId:             slot.resourceId,
+                    resourceName:           slot.resourceName,
+                    additionalResourceIds:  additionalResourceIds,
+                    startDate:              startStr,
+                    endDate:                endStr
                 };
 
                 sessionStorage.setItem('cenacle_intake_payload', JSON.stringify(payload));

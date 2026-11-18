@@ -680,7 +680,7 @@ class ConfigKeys extends AbstractConfigKeys
     public const SCHEDULE_RESERVATION_LABEL = [
         'key' => 'schedule.reservation.label',
         'type' => 'string',
-        'default' => '{name}',
+        'default' => '{title}',
         'label' => 'Reservation Label',
         'description' => 'Label template for reservations in the schedule view',
         'config_file_comment' => "Format string for reservation labels (use placeholders like {name}, {title})\nAvailable properties are: {name}, {title}, {description}, {email}, {phone}, {organization}, {position}, {startdate}, {enddate} {resourcename} {participants} {invitees} {reservationAttributes}.\nCustom attributes can be added using att with the attribute id. For example {att1}",
