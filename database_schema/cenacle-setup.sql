@@ -53,7 +53,9 @@ INSERT IGNORE INTO `user_statuses` (`status_id`, `description`) VALUES
 
 INSERT IGNORE INTO `roles` (`role_id`, `name`, `role_level`) VALUES
     (1, 'Group Admin', 1),
-    (2, 'Application Admin', 2);
+    (2, 'Application Admin', 2),
+    (3, 'Resource Admin', 3),
+    (4, 'Schedule Admin', 4);
 
 INSERT IGNORE INTO `reservation_types` (`type_id`, `label`) VALUES
     (1, 'Reservation'), (2, 'Blackout');
@@ -64,14 +66,21 @@ INSERT IGNORE INTO `reservation_statuses` (`status_id`, `label`) VALUES
 -- ---------------------------------------------------------------------------
 -- 1. Groups & Roles
 -- ---------------------------------------------------------------------------
--- role_id: 1 = Group Admin, 2 = Application Admin, 4 = Schedule Admin
+-- role_id: 1 = Group Admin, 2 = Application Admin, 3 = Resource Admin, 4 = Schedule Admin
+-- Groups:
+--   1 = Administrators  → Application Admin (full system access)
+--   2 = Staff           → no special role   (view-only via resource permissions)
+--   3 = Schedulers      → Schedule Admin    (book & manage reservations)
 INSERT INTO `groups` (`group_id`, `name`) VALUES
     (1, 'Administrators'),
-    (2, 'Staff');
+    (2, 'Staff'),
+    (3, 'Schedulers');
 
--- Administrators group gets Application Admin role
+-- Administrators → Application Admin (role_id=2)
+-- Schedulers     → Schedule Admin    (role_id=4)
 INSERT INTO `group_roles` (`group_id`, `role_id`) VALUES
-    (1, 2);
+    (1, 2),
+    (3, 4);
 
 -- ---------------------------------------------------------------------------
 -- 2. Time Layout – shared base layout (all timezones stored in UTC in
@@ -315,43 +324,98 @@ INSERT INTO `reservation_color_rules` (`custom_attribute_id`, `attribute_type`, 
 VALUES (1, 1, 'Hand Reflexology – 30 min (700 Birr)',        1, '#E8865A');
 
 -- ---------------------------------------------------------------------------
--- 7. Admin user
---    Password: cenacle123  (bcrypt hash below – CHANGE IMMEDIATELY)
---    Generated via: password_hash('cenacle123', PASSWORD_BCRYPT)
---    If your LibreBooking uses SHA1+salt, replace with the appropriate hash.
+-- 7. Users  (3-tier access system)
+--
+--    All passwords use SHA1+salt (LibreBooking default auth).
+--    Default password for each account: cenacle123
+--    CHANGE ALL PASSWORDS immediately after first login via
+--    Admin → Manage Users.
+--
+--    Account summary:
+--    ┌──────────────────┬──────────────────────┬──────────────────────────────┐
+--    │ Username         │ Role                 │ Access level                 │
+--    ├──────────────────┼──────────────────────┼──────────────────────────────┤
+--    │ cenacle.ceo      │ Application Admin    │ Full system + config access   │
+--    │ cenacle.scheduler│ Schedule Admin       │ Create / edit reservations   │
+--    │ cenacle.staff    │ (none)               │ View schedule only           │
+--    └──────────────────┴──────────────────────┴──────────────────────────────┘
 -- ---------------------------------------------------------------------------
+
+-- ── CEO / Super Admin ───────────────────────────────────────────────────────
 INSERT INTO `users`
     (`fname`, `lname`, `email`, `username`, `password`, `salt`,
      `timezone`, `lastlogin`, `status_id`, `date_created`, `language`)
 VALUES
-    ('Cenacle', 'Admin', 'admin@cenacle.com', 'cenacle.admin',
-     -- This is a placeholder SHA1 hash for password "cenacle123" with salt "cenacle1"
-     -- Run Web/install/ to create a proper user, or update this hash.
-     SHA1(CONCAT('cenacle123', 'cenacle1')), 'cenacle1',
+    ('CEO', 'Cenacle', 'ceo@cenacle.com', 'cenacle.ceo',
+     SHA1(CONCAT('cenacle123', 'ceo1salt')), 'ceo1salt',
      'Africa/Addis_Ababa', NOW(), 1, NOW(), 'en_us');
 
--- Make admin a member of the Administrators group
+-- CEO → Administrators group (Application Admin)
 INSERT INTO `user_groups` (`user_id`, `group_id`)
-SELECT u.user_id, 1 FROM `users` u WHERE u.username = 'cenacle.admin';
+SELECT u.user_id, 1 FROM `users` u WHERE u.username = 'cenacle.ceo';
 
--- Grant admin full access to all resources
+-- CEO → full (book+edit) access to all resources (permission_id=0)
+INSERT INTO `user_resource_permissions` (`user_id`, `resource_id`, `permission_id`)
+SELECT u.user_id, r.resource_id, 0
+FROM `users` u, `resources` r
+WHERE u.username = 'cenacle.ceo';
+
+-- ── Scheduler ───────────────────────────────────────────────────────────────
+INSERT INTO `users`
+    (`fname`, `lname`, `email`, `username`, `password`, `salt`,
+     `timezone`, `lastlogin`, `status_id`, `date_created`, `language`)
+VALUES
+    ('Scheduler', 'Cenacle', 'scheduler@cenacle.com', 'cenacle.scheduler',
+     SHA1(CONCAT('cenacle123', 'sch1salt')), 'sch1salt',
+     'Africa/Addis_Ababa', NOW(), 1, NOW(), 'en_us');
+
+-- Scheduler → Schedulers group (Schedule Admin role_id=4)
+INSERT INTO `user_groups` (`user_id`, `group_id`)
+SELECT u.user_id, 3 FROM `users` u WHERE u.username = 'cenacle.scheduler';
+
+-- Scheduler → full (book+edit) access to all resources (permission_id=0)
+INSERT INTO `user_resource_permissions` (`user_id`, `resource_id`, `permission_id`)
+SELECT u.user_id, r.resource_id, 0
+FROM `users` u, `resources` r
+WHERE u.username = 'cenacle.scheduler';
+
+-- ── Staff Viewer ─────────────────────────────────────────────────────────────
+INSERT INTO `users`
+    (`fname`, `lname`, `email`, `username`, `password`, `salt`,
+     `timezone`, `lastlogin`, `status_id`, `date_created`, `language`)
+VALUES
+    ('Staff', 'Cenacle', 'staff@cenacle.com', 'cenacle.staff',
+     SHA1(CONCAT('cenacle123', 'stf1salt')), 'stf1salt',
+     'Africa/Addis_Ababa', NOW(), 1, NOW(), 'en_us');
+
+-- Staff → Staff group (no admin role)
+INSERT INTO `user_groups` (`user_id`, `group_id`)
+SELECT u.user_id, 2 FROM `users` u WHERE u.username = 'cenacle.staff';
+
+-- Staff → view-only access to all resources (permission_id=1)
+-- ResourcePermissionType::View = 1  (see Domain/Values/ResourcePermissionType.php)
 INSERT INTO `user_resource_permissions` (`user_id`, `resource_id`, `permission_id`)
 SELECT u.user_id, r.resource_id, 1
 FROM `users` u, `resources` r
-WHERE u.username = 'cenacle.admin';
+WHERE u.username = 'cenacle.staff';
 
 SET foreign_key_checks = 1;
 
 -- =============================================================================
 -- POST-SETUP CHECKLIST
 -- =============================================================================
--- 1. Update admin password via Admin → Manage Users after first login
--- 2. Admin → Manage Schedules → set weekdaystart=Monday, daysvisible=7
--- 3. Admin → Manage Schedules → assign layout 1 (Mon–Sat) as default;
+-- 1. Change ALL default passwords immediately via Admin → Manage Users:
+--      cenacle.ceo       (CEO / full admin)
+--      cenacle.scheduler (Scheduler / booking manager)
+--      cenacle.staff     (Staff / view-only)
+-- 2. Update email addresses for each account to real addresses
+-- 3. Admin → Manage Schedules → set weekdaystart=Monday, daysvisible=7
+-- 4. Admin → Manage Schedules → assign layout 1 (Mon–Sat) as default;
 --    configure Sunday to use layout 2 via day-of-week layout overrides
--- 4. Admin → Manage Resources → review min/max duration for each resource
--- 5. Admin → Manage Groups → create staff logins and add to "Staff" group
--- 6. Upload Cenacle logo via Admin → Application Settings → Logo
--- 7. Config: set script.url to your actual domain in config/config.php
+-- 5. Admin → Manage Resources → review min/max duration for each resource
+-- 6. Admin → Manage Groups → add more staff logins to the "Staff" or
+--    "Schedulers" group as needed
+-- 7. Upload Cenacle logo via Admin → Application Settings → Logo
+-- 8. Config: set script.url to your actual domain in config/config.php
 -- =============================================================================
 

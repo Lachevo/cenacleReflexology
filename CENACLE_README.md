@@ -104,10 +104,16 @@ Every booking stores structured custom metadata:
 3. **Number of Persons**: Party size.
 4. **Notes**: Special preferences, medical notes, or requests.
 
-### User Management & Role-Based Access
-- **Application Administrators**: Full access to global configuration, layout hours, pricing, staff accounts, reports, and plugin settings.
-- **Staff / Receptionists**: Access to the schedule, creating, editing, and checking in client appointments.
-- **Password Security**: Bcrypt password hashing, session expiration timeouts, and CSRF protection.
+### User Management & Three-Tier Role-Based Access
+The system is configured with a 3-tier hierarchy separating governance, daily booking operations, and floor staff schedule viewing:
+
+| User Account | Default Username | Default Password | Role / Group | Privileges & Access Level |
+| :--- | :--- | :--- | :--- | :--- |
+| **Super Admin (CEO)** | `cenacle.ceo` | `cenacle123` | **Administrators** (Application Admin) | Unrestricted access: global settings, pricing, layouts/operating hours, user accounts, groups, system logs, plugins, and reports. |
+| **Scheduler** | `cenacle.scheduler` | `cenacle123` | **Schedulers** (Schedule Admin) | Booking management: create, edit, move, and cancel reservations across all chairs and bed. Cannot modify core system configuration, plugins, or billing layouts. |
+| **Staff** | `cenacle.staff` | `cenacle123` | **Staff** (View-Only Permissions) | View-only floor access: inspect today's appointments, customer treatment info, and assigned chair/bed numbers. Cannot insert, modify, or delete bookings. |
+
+> **Security Note**: Default passwords should be changed immediately upon first login under **My Account → Change Password**.
 
 ### Reporting & Resource Utilization Analytics
 - **Utilization Reports**: Generate metrics showing total hours booked per Chair and Massage Bed over any date range.
@@ -495,7 +501,10 @@ Regardless of which host you select, follow this deployment sequence:
    ```bash
    rm -rf tpl_c/*
    ```
-6. **Change Default Admin Password**: Log in with `cenacle.admin` / `cenacle123` and update the password under **My Account → Change Password**.
+6. **Change Default Passwords**: Log in and update default passwords under **My Account → Change Password** for all seeded accounts:
+   - `cenacle.ceo` (CEO / Super Admin)
+   - `cenacle.scheduler` (Scheduler / Front Desk)
+   - `cenacle.staff` (Staff / View-only)
 
 ---
 
